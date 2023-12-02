@@ -12,12 +12,44 @@ const resolvers = {
         games() {
             return db.games
         },
+        game(_, args) {
+            return db.games.find((game) => game.id === args.id)
+        },
 
         reviews() {
             return db.reviews
         },
+        review(_, args) {
+            return db.reviews.find((review) => review.id === args.id)
+        },
+
         authors() {
             return db.authors
+        }, 
+        author(_, args) {
+            return db.authors.find((author) => author.id === args.id)
+        }
+    },
+
+    Game: {
+        reviews(parent) {
+            return db.reviews.filter((review) => review.game_id === parent.id)
+        }
+    },
+
+    Author: {
+        reviews(parent) {
+            return db.reviews.filter((review) => review.author_id === parent.id)
+        }
+    },
+
+    Review: {
+        author(parent) {
+            return db.authors.find((auth) => auth.id === parent.author_id)
+        },
+
+        game(parent) {
+            return db.games.find((game) => game.id === parent.game_id)
         }
     }
 }
@@ -33,3 +65,8 @@ const { url } = await startStandaloneServer(server, {
 })
 
 console.log('Server ready at port ', 4000)
+
+// Inside of the resolver -> object(parent, args, context)
+// parent : to specify the parent object
+// ages : to specify the args to be passed 
+// context : used to pass the user | For authorization purposes |
